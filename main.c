@@ -8,6 +8,10 @@
 
 #define DICT_FILE "./dictionary/words.txt"
 
+#ifndef MAX_LAST_NAME_SIZE
+#define MAX_LAST_NAME_SIZE 16
+#endif
+
 static double diff_in_second(struct timespec t1, struct timespec t2)
 {
     struct timespec diff;
