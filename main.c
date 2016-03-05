@@ -8,8 +8,10 @@
 
 #define DICT_FILE "./dictionary/words.txt"
 
-#ifndef MAX_LAST_NAME_SIZE
-#define MAX_LAST_NAME_SIZE 16
+#if defined(OPT)
+#include "phonebook_opt.h"
+#else
+#include "phonebook_orig.h"
 #endif
 
 static double diff_in_second(struct timespec t1, struct timespec t2)
@@ -55,6 +57,10 @@ int main(int argc, char *argv[])
         while (line[i] != '\0')
             i++;
         line[i - 1] = '\0';
+
+#if defined(OPT)
+        e->nameLength = i - 1;
+#endif
         i = 0;
         e = append(line, e);
     }
