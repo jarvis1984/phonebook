@@ -48,6 +48,10 @@ int main(int argc, char *argv[])
     printf("size of entry : %lu bytes\n", sizeof(entry));
     e = pHead;
     e->pNext = NULL;
+#if defined(OPT)
+    //initialize phonebook data structure
+    initBook();
+#endif
 
 #if defined(__GNUC__)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
@@ -101,7 +105,12 @@ int main(int argc, char *argv[])
     printf("execution time of append() : %lf sec\n", cpu_time1);
     printf("execution time of findName() : %lf sec\n", cpu_time2);
 
+#if defined(OPT)
+    //close phonebook data structure
+    closeBook();
+#else
     if (pHead->pNext) free(pHead->pNext);
+#endif
     free(pHead);
 
     return 0;
