@@ -2,71 +2,64 @@
 #include <string.h>
 #include "phonebook_opt.h"
 
-//entity for each name length
-static entry root[MAX_LAST_NAME_SIZE];
-static entry *pEntry = NULL;
+extern int nameLength;
+static char *pAlpha[ALPHABET_NUMBER] = {NULL};
 
 /* FILL YOUR OWN IMPLEMENTATION HERE! */
 entry *findName(char lastname[], entry *pHead)
 {
-    int nameIndex = strlen(lastname) - 1;
-    int capitalIndex = lastname[0] - 'a';
-    pHead = root[nameIndex].pCapital[capitalIndex];
+    int length = strlen(lastname);
+    pHead = (entry *)(pAlpha[lastname[0] - 'a']);
 
     while (pHead != NULL) {
-        if (strcasecmp(lastname, pHead->lastName) == 0)
+        if (length >= pHead->shortestName &&
+                length <= pHead->longestName &&
+                strncmp(lastname, pHead->lastName, length) == 0)
             return pHead;
         pHead = pHead->pNext;
     }
-
     return NULL;
 }
 
 entry *append(char lastName[], entry *e)
 {
-    if (e->nameLength <= 0 || e->nameLength > MAX_LAST_NAME_SIZE) {
+    if (e->shortestName == 0) {
+        strcpy(e->lastName, lastName);
+        e->shortestName = nameLength;
+        e->longestName = nameLength;
+        pAlpha[lastName[0] - 'a'] = (char *)e;
         return e;
+    } else if (e->shortestName >= nameLength) {
+        if (strncmp(e->lastName, lastName, nameLength) == 0) {
+            e->shortestName = nameLength;
+            return e;
+        }
+    } else if (e->longestName >= nameLength) {
+        if (strncmp(e->lastName, lastName, nameLength) == 0) {
+            return e;
+        }
+    } else {
+        if (strncmp(e->lastName, lastName, e->longestName) == 0) {
+            for (int i = e->longestName; i < nameLength; ++i) {
+                e->lastName[i] = lastName[i];
+            }
+
+            e->longestName = nameLength;
+            e->lastName[nameLength] = '\0';
+            return e;
+        }
     }
 
-    int nameIndex = e->nameLength-1;
-    int capitalIndex = lastName[0] - 'a';
+    e->pNext = (entry *) malloc(sizeof(entry));
+    e = e->pNext;
+    strcpy(e->lastName, lastName);
+    e->shortestName = nameLength;
+    e->longestName = nameLength;
+    e->pNext = NULL;
 
-    pEntry = root[nameIndex].pCapital[capitalIndex]->pLast;
-    strcpy(pEntry->lastName, lastName);
-    pEntry->pNext = (entry *) malloc(sizeof(entry));
-    pEntry->pNext->pNext = NULL;
-    root[nameIndex].pCapital[capitalIndex]->pLast = pEntry->pNext;
+    if (pAlpha[lastName[0] - 'a'] == NULL) {
+        pAlpha[lastName[0] - 'a'] = (char *)e;
+    }
+
     return e;
-}
-
-int initBook(void)
-{
-    int i = 0, j = 0;
-    for (i = 0; i < MAX_LAST_NAME_SIZE; ++i) {
-        root[i].pNext = NULL;
-        root[i].pLast = &root[i];
-
-        for (j = 0; j < ALPHABET_NUMBER; ++j) {
-            root[i].pCapital[j] = (entry *) malloc(sizeof(entry));
-            root[i].pCapital[j]->pNext = NULL;
-            root[i].pCapital[j]->pLast = root[i].pCapital[j];
-        }
-    }
-
-    return 0;
-}
-
-int closeBook(void)
-{
-    int i = 0, j = 0;
-    for (i = 0; i < MAX_LAST_NAME_SIZE; ++i) {
-        root[i].pNext = NULL;
-        root[i].pLast = &root[i];
-
-        for (j = 0; j < ALPHABET_NUMBER; ++j) {
-            free(root[i].pCapital[j]);
-        }
-    }
-
-    return 0;
 }

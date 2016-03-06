@@ -18,15 +18,12 @@ typedef struct __PHONE_BOOK_ENTRY {
     char city[16];
     char state[2];
     char zip[5];
-    int nameLength;
+    int shortestName;
+    int longestName;
     struct __PHONE_BOOK_ENTRY *pNext;
-    struct __PHONE_BOOK_ENTRY *pLast;
-    struct __PHONE_BOOK_ENTRY *pCapital[ALPHABET_NUMBER];
 } entry;
 
 entry *findName(char lastname[], entry *pHead);
 entry *append(char lastName[], entry *e);
-int initBook(void);
-int closeBook(void);
 
 #endif
