@@ -51,8 +51,8 @@ int main(int argc, char *argv[])
     e = pHead;
     e->pNext = NULL;
 #if defined(OPT)
-    e->shortestName = 0;
-    e->longestName = 0;
+    //e->shortestName = 0;
+    //e->longestName = 0;
 #endif
 
 #if defined(__GNUC__)
